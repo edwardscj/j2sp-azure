@@ -166,7 +166,7 @@
             "name": "[concat('rg',parameters('companyAbbreviation'),'j2spdiag')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2018-02-01",
-            "location": "[parameters('location')]",
+            "location": "eastus",
             "properties": {},
             "kind": "Storage",
             "sku": {
