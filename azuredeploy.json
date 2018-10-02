@@ -3,73 +3,34 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "companyAbbreviation": {
-            "type": "string"
+            "type": "string",
+  		    "defaultValue": "TW",
+  		    "metadata": {
+				"description": "2 Character Abbreviation for Company that is Migrating"
+			}
         },
-        "enableAcceleratedNetworking": {
-            "type": "bool"
-        },
-        "networkSecurityGroupName": {
-            "type": "string"
-        },
-        "networkSecurityGroupRules": {
-            "type": "array"
-        },
-        "virtualNetworkName": {
-            "type": "string"
-        },
-        "addressPrefix": {
-            "type": "string"
-        },
-        "subnetName": {
-            "type": "string"
-        },
-        "subnetPrefix": {
-            "type": "string"
-        },
-        "publicIpAddressName": {
-            "type": "string"
-        },
-        "publicIpAddressType": {
-            "type": "string"
-        },
-        "publicIpAddressSku": {
-            "type": "string"
-        },
-        "virtualMachineName": {
-            "type": "string"
-        },
-        "virtualMachineRG": {
-            "type": "string"
-        },
-        "osDiskType": {
-            "type": "string"
-        },
-        "virtualMachineSize": {
-            "type": "string"
-        },
+		"virtualMachineSize": {
+		  "type": "string",
+		  "defaultValue": "Standard_DS2_v2",
+		  "allowedValues": [
+			"Standard_DS2_v2",
+			"Standard_DS3_v2"
+		  ],
+		  "metadata": {
+			"description": "Virtual Machine Size (use Default unless known)"
+		  }
+		},		
         "adminUsername": {
             "type": "string"
         },
         "adminPassword": {
             "type": "secureString"
-        },
-        "diagnosticsStorageAccountName": {
-            "type": "string"
-        },
-        "diagnosticsStorageAccountId": {
-            "type": "string"
-        },
-        "diagnosticsStorageAccountType": {
-            "type": "string"
-        },
-        "diagnosticsStorageAccountKind": {
-            "type": "string"
         }
     },
     "variables": {
-        "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]",
-        "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+        "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', [concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg')])]",
+        "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', [concat('rg-',parameters('companyAbbreviation'),'-j2sp-vnet')])]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', 'default')]"
     },
     "resources": [
         {
@@ -78,9 +39,9 @@
             "apiVersion": "2018-04-01",
             "location": "eastus",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('networkSecurityGroupName'))]",
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
-                "[concat('Microsoft.Network/publicIpAddresses/', parameters('publicIpAddressName'))]"
+                "[concat('Microsoft.Network/networkSecurityGroups/', [concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg')])]",
+                "[concat('Microsoft.Network/virtualNetworks/', [concat('rg-',parameters('companyAbbreviation'),'-j2sp-vnet')])]",
+                "[concat('Microsoft.Network/publicIpAddresses/', [concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-ip')])]"
             ],
             "properties": {
                 "ipConfigurations": [
@@ -92,12 +53,12 @@
                             },
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIpAddress": {
-                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', parameters('publicIpAddressName'))]"
+                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', [concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-ip')])]"
                             }
                         }
                     }
                 ],
-                "enableAcceleratedNetworking": "[parameters('enableAcceleratedNetworking')]",
+                "enableAcceleratedNetworking": true,
                 "networkSecurityGroup": {
                     "id": "[variables('nsgId')]"
                 }
@@ -105,31 +66,31 @@
             "tags": {}
         },
         {
-            "name": "[parameters('networkSecurityGroupName')]",
+            "name": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg')]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2018-08-01",
             "location": "eastus",
             "properties": {
-                "securityRules": "[parameters('networkSecurityGroupRules')]"
+                "securityRules": []
             },
             "tags": {}
         },
         {
-            "name": "[parameters('virtualNetworkName')]",
+            "name": "[concat('rg-',parameters('companyAbbreviation'),'-j2sp-vnet')]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2018-08-01",
             "location": "eastus",
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
-                        "[parameters('addressPrefix')]"
+                        "10.0.0.0/24"
                     ]
                 },
                 "subnets": [
                     {
-                        "name": "[parameters('subnetName')]",
+                        "name": "default",
                         "properties": {
-                            "addressPrefix": "[parameters('subnetPrefix')]"
+                            "addressPrefix": "10.0.0.0/24"
                         }
                     }
                 ]
@@ -137,26 +98,26 @@
             "tags": {}
         },
         {
-            "name": "[parameters('publicIpAddressName')]",
+            "name": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-ip')]",
             "type": "Microsoft.Network/publicIpAddresses",
             "apiVersion": "2018-08-01",
             "location": "eastus",
             "properties": {
-                "publicIpAllocationMethod": "[parameters('publicIpAddressType')]"
+                "publicIpAllocationMethod": "Dynamic"
             },
             "sku": {
-                "name": "[parameters('publicIpAddressSku')]"
+                "name": "Basic"
             },
             "tags": {}
         },
         {
-            "name": "[parameters('virtualMachineName')]",
+            "name": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1')]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2018-04-01",
             "location": "eastus",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/', [concat('vm-',parameters('companyAbbreviation'),'-j2sp-1253')])]",
-                "[concat('Microsoft.Storage/storageAccounts/', parameters('diagnosticsStorageAccountName'))]"
+                "[concat('Microsoft.Storage/storageAccounts/', [concat('rg',parameters('companyAbbreviation'),'j2spdiag')])]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -166,7 +127,7 @@
                     "osDisk": {
                         "createOption": "fromImage",
                         "managedDisk": {
-                            "storageAccountType": "[parameters('osDiskType')]"
+                            "storageAccountType": "Premium_LRS"
                         }
                     },
                     "imageReference": {
@@ -184,7 +145,7 @@
                     ]
                 },
                 "osProfile": {
-                    "computerName": "[parameters('virtualMachineName')]",
+                    "computerName": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1')]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]",
                     "windowsConfiguration": {
@@ -195,21 +156,21 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[concat('https://', parameters('diagnosticsStorageAccountName'), '.blob.core.windows.net/')]"
+                        "storageUri": "[concat('https://', [concat('rg',parameters('companyAbbreviation'),'j2spdiag')], '.blob.core.windows.net/')]"
                     }
                 }
             },
             "tags": {}
         },
         {
-            "name": "[parameters('diagnosticsStorageAccountName')]",
+            "name": "[concat('rg',parameters('companyAbbreviation'),'j2spdiag')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2018-02-01",
             "location": "[parameters('location')]",
             "properties": {},
-            "kind": "[parameters('diagnosticsStorageAccountKind')]",
+            "kind": "Storage",
             "sku": {
-                "name": "[parameters('diagnosticsStorageAccountType')]"
+                "name": "Standard_LRS"
             },
             "tags": {}
         }
