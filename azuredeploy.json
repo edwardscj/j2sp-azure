@@ -39,9 +39,9 @@
             "apiVersion": "2018-04-01",
             "location": "eastus",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkSecurityGroups/', concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg'))]",
-                "[concat('Microsoft.Network/virtualNetworks/', concat('rg-',parameters('companyAbbreviation'),'-j2sp-vnet'))]",
-                "[concat('Microsoft.Network/publicIpAddresses/', concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-ip'))]"
+                "[concat('Microsoft.Network/networkSecurityGroups/','vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg')]",
+                "[concat('Microsoft.Network/virtualNetworks/', 'rg-',parameters('companyAbbreviation'),'-j2sp-vnet')]",
+                "[concat('Microsoft.Network/publicIpAddresses/', 'vm-',parameters('companyAbbreviation'),'-j2sp-1-ip')]"
             ],
             "properties": {
                 "ipConfigurations": [
@@ -116,8 +116,8 @@
             "apiVersion": "2018-04-01",
             "location": "eastus",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', concat('vm-',parameters('companyAbbreviation'),'-j2sp-1253'))]",
-                "[concat('Microsoft.Storage/storageAccounts/', concat('rg',parameters('companyAbbreviation'),'j2spdiag'))]"
+                "[concat('Microsoft.Network/networkInterfaces/', 'vm-',parameters('companyAbbreviation'),'-j2sp-1253')]",
+                "[concat('Microsoft.Storage/storageAccounts/', 'rg',parameters('companyAbbreviation'),'j2spdiag')]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -156,7 +156,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[concat('https://', concat('rg',parameters('companyAbbreviation'),'j2spdiag'), '.blob.core.windows.net/')]"
+                        "storageUri": "[concat('https://', 'rg',parameters('companyAbbreviation'),'j2spdiag', '.blob.core.windows.net/')]"
                     }
                 }
             },
