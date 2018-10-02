@@ -28,7 +28,7 @@
         }
     },
     "variables": {
-        "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg'))]",  "vm-temp-j2sp-1-nsg"
+        "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg'))]",
         "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', concat('rg-',parameters('companyAbbreviation'),'-j2sp-vnet'))]",
         "subnetRef": "[concat(variables('vnetId'), '/subnets/', 'default')]"
     },
