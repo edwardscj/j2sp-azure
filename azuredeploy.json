@@ -28,8 +28,8 @@
         }
     },
     "variables": {
-        "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', [concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg')])]",
-        "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', [concat('rg-',parameters('companyAbbreviation'),'-j2sp-vnet')])]",
+        "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg'))]",  "vm-temp-j2sp-1-nsg"
+        "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', concat('rg-',parameters('companyAbbreviation'),'-j2sp-vnet'))]",
         "subnetRef": "[concat(variables('vnetId'), '/subnets/', 'default')]"
     },
     "resources": [
@@ -39,9 +39,9 @@
             "apiVersion": "2018-04-01",
             "location": "eastus",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkSecurityGroups/', [concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg')])]",
-                "[concat('Microsoft.Network/virtualNetworks/', [concat('rg-',parameters('companyAbbreviation'),'-j2sp-vnet')])]",
-                "[concat('Microsoft.Network/publicIpAddresses/', [concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-ip')])]"
+                "[concat('Microsoft.Network/networkSecurityGroups/', concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', concat('rg-',parameters('companyAbbreviation'),'-j2sp-vnet'))]",
+                "[concat('Microsoft.Network/publicIpAddresses/', concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-ip'))]"
             ],
             "properties": {
                 "ipConfigurations": [
@@ -53,7 +53,7 @@
                             },
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIpAddress": {
-                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', [concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-ip')])]"
+                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-ip'))]"
                             }
                         }
                     }
@@ -140,7 +140,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', [concat('vm-',parameters('companyAbbreviation'),'-j2sp-1253')])]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('vm-',parameters('companyAbbreviation'),'-j2sp-1253'))]"
                         }
                     ]
                 },
@@ -156,7 +156,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[concat('https://', [concat('rg',parameters('companyAbbreviation'),'j2spdiag')], '.blob.core.windows.net/')]"
+                        "storageUri": "[concat('https://', concat('rg',parameters('companyAbbreviation'),'j2spdiag'), '.blob.core.windows.net/')]"
                     }
                 }
             },
