@@ -2,7 +2,7 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "networkInterfaceName": {
+        "companyAbbreviation": {
             "type": "string"
         },
         "enableAcceleratedNetworking": {
@@ -73,7 +73,7 @@
     },
     "resources": [
         {
-            "name": "[parameters('networkInterfaceName')]",
+            "name": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1253')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2018-04-01",
             "location": "eastus",
@@ -155,7 +155,7 @@
             "apiVersion": "2018-04-01",
             "location": "eastus",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]",
+                "[concat('Microsoft.Network/networkInterfaces/', [concat('vm-',parameters('companyAbbreviation'),'-j2sp-1253')])]",
                 "[concat('Microsoft.Storage/storageAccounts/', parameters('diagnosticsStorageAccountName'))]"
             ],
             "properties": {
@@ -179,7 +179,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', [concat('vm-',parameters('companyAbbreviation'),'-j2sp-1253')])]"
                         }
                     ]
                 },
