@@ -37,7 +37,7 @@
             "name": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1253')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2018-04-01",
-            "location": "eastus",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkSecurityGroups/','vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg')]",
                 "[concat('Microsoft.Network/virtualNetworks/', 'rg-',parameters('companyAbbreviation'),'-j2sp-vnet')]",
@@ -69,7 +69,7 @@
             "name": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg')]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2018-08-01",
-            "location": "eastus",
+            "location": "[resourceGroup().location]",
             "properties": {
                 "securityRules": []
             },
@@ -79,7 +79,7 @@
             "name": "[concat('rg-',parameters('companyAbbreviation'),'-j2sp-vnet')]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2018-08-01",
-            "location": "eastus",
+            "location": "[resourceGroup().location]",
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
@@ -101,7 +101,7 @@
             "name": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-ip')]",
             "type": "Microsoft.Network/publicIpAddresses",
             "apiVersion": "2018-08-01",
-            "location": "eastus",
+            "location": "[resourceGroup().location]",
             "properties": {
                 "publicIpAllocationMethod": "Dynamic"
             },
@@ -114,7 +114,7 @@
             "name": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1')]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2018-04-01",
-            "location": "eastus",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/', 'vm-',parameters('companyAbbreviation'),'-j2sp-1253')]",
                 "[concat('Microsoft.Storage/storageAccounts/', 'rg',parameters('companyAbbreviation'),'j2spdiag')]"
@@ -166,7 +166,7 @@
             "name": "[concat('rg',parameters('companyAbbreviation'),'j2spdiag')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2018-02-01",
-            "location": "eastus",
+            "location": "[resourceGroup().location]",
             "properties": {},
             "kind": "Storage",
             "sku": {
