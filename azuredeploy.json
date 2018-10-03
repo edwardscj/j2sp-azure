@@ -179,7 +179,7 @@
         {
             "type": "Microsoft.Sql/servers",
             "kind": "v12.0",
-            "name": "concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp')",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp')]",
             "apiVersion": "2015-05-01-preview",
             "location": "[resourceGroup().location]",
             "scale": null,
