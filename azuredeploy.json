@@ -21,6 +21,7 @@
 		  }
 		},		
         "adminUsername": {
+    	    "defaultValue": "j2sp-admin",
             "type": "string"
         },
         "adminPassword": {
@@ -117,7 +118,7 @@
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/', 'vm-',parameters('companyAbbreviation'),'-j2sp-1253')]",
-                "[concat('Microsoft.Storage/storageAccounts/', 'rg',parameters('companyAbbreviation'),'j2spdiag')]"
+                "[concat('Microsoft.Storage/storageAccounts/', 'rg', toLower(parameters('companyAbbreviation')),'j2spdiag')]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -156,14 +157,14 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[concat('https://', 'rg',parameters('companyAbbreviation'),'j2spdiag', '.blob.core.windows.net/')]"
+                        "storageUri": "[concat('https://', 'rg',toLower(parameters('companyAbbreviation')),'j2spdiag', '.blob.core.windows.net/')]"
                     }
                 }
             },
             "tags": {}
         },
         {
-            "name": "[concat('rg',parameters('companyAbbreviation'),'j2spdiag')]",
+            "name": "[concat('rg',toLower(parameters('companyAbbreviation')),'j2spdiag')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2018-02-01",
             "location": "[resourceGroup().location]",
