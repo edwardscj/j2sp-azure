@@ -203,7 +203,7 @@
         },
         {
             "type": "Microsoft.Sql/servers/advisors",
-            "name": "[concat('sql-',toLower(parameters('companyAbbreviation'),'-j2sp')), '/', 'DropIndex')]",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp')), '/', 'DropIndex')]",
             "apiVersion": "2014-04-01",
             "scale": null,
             "properties": {
