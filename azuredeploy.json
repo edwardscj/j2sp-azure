@@ -9,17 +9,6 @@
 				"description": "2 Character Abbreviation for Company that is Migrating"
 			}
         },
-		"virtualMachineSize": {
-		  "type": "string",
-		  "defaultValue": "Standard_DS2_v2",
-		  "allowedValues": [
-			"Standard_DS2_v2",
-			"Standard_DS3_v2"
-		  ],
-		  "metadata": {
-			"description": "Virtual Machine Size (use Default unless known)"
-		  }
-		},		
         "adminUsername": {
     	    "defaultValue": "j2sp-admin",
             "type": "string"
@@ -35,135 +24,318 @@
     },
     "resources": [
         {
-            "name": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1253')]",
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2018-04-01",
+            "type": "Microsoft.Sql/servers",
+            "kind": "v12.0",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp')]",
+            "apiVersion": "2015-05-01-preview",
             "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "administratorLogin": "[parameters('adminUsername')]",
+                "version": "12.0"
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'CreateIndex')]",
+            "apiVersion": "2014-04-01",
+            "scale": null,
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            },
             "dependsOn": [
-                "[concat('Microsoft.Network/networkSecurityGroups/','vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg')]",
-                "[concat('Microsoft.Network/virtualNetworks/', 'rg-',parameters('companyAbbreviation'),'-j2sp-vnet')]",
-                "[concat('Microsoft.Network/publicIpAddresses/', 'vm-',parameters('companyAbbreviation'),'-j2sp-1-ip')]"
-            ],
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "properties": {
-                            "subnet": {
-                                "id": "[variables('subnetRef')]"
-                            },
-                            "privateIPAllocationMethod": "Dynamic",
-                            "publicIpAddress": {
-                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-ip'))]"
-                            }
-                        }
-                    }
-                ],
-                "enableAcceleratedNetworking": true,
-                "networkSecurityGroup": {
-                    "id": "[variables('nsgId')]"
-                }
-            },
-            "tags": {}
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]"
+            ]
         },
         {
-            "name": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-nsg')]",
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "2018-08-01",
-            "location": "[resourceGroup().location]",
+            "type": "Microsoft.Sql/servers/advisors",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'DropIndex')]",
+            "apiVersion": "2014-04-01",
+            "scale": null,
             "properties": {
-                "securityRules": []
+                "autoExecuteValue": "Disabled"
             },
-            "tags": {}
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]"
+            ]
         },
         {
-            "name": "[concat('rg-',parameters('companyAbbreviation'),'-j2sp-vnet')]",
-            "type": "Microsoft.Network/virtualNetworks",
-            "apiVersion": "2018-08-01",
-            "location": "[resourceGroup().location]",
+            "type": "Microsoft.Sql/servers/advisors",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'DbParameterization')]",
+            "apiVersion": "2014-04-01",
+            "scale": null,
             "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "10.0.0.0/24"
-                    ]
-                },
-                "subnets": [
-                    {
-                        "name": "default",
-                        "properties": {
-                            "addressPrefix": "10.0.0.0/24"
-                        }
-                    }
-                ]
+                "autoExecuteValue": "Disabled"
             },
-            "tags": {}
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]"
+            ]
         },
         {
-            "name": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1-ip')]",
-            "type": "Microsoft.Network/publicIpAddresses",
-            "apiVersion": "2018-08-01",
-            "location": "[resourceGroup().location]",
+            "type": "Microsoft.Sql/servers/advisors",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'DefragmentIndex')]",
+            "apiVersion": "2014-04-01",
+            "scale": null,
             "properties": {
-                "publicIpAllocationMethod": "Dynamic"
+                "autoExecuteValue": "Disabled"
             },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'ForceLastGoodPlan')]",
+            "apiVersion": "2014-04-01",
+            "scale": null,
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/auditingPolicies",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'Default')]",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "auditingState": "New",
+                "eventTypesToAudit": "PlainSQL_Success,PlainSQL_Failure,ParameterizedSQL_Success,ParameterizedSQL_Failure,StoredProcedure_Success,StoredProcedure_Failure,Login_Success,Login_Failure,TransactionManagement_Success,TransactionManagement_Failure",
+                "storageAccountName": null,
+                "storageAccountKey": null,
+                "storageAccountSecondaryKey": null,
+                "storageTableEndpoint": null,
+                "storageAccountResourceGroupName": null,
+                "storageAccountSubscriptionId": null,
+                "fullAuditLogsTableName": "SQLDBAuditLogsSqltempj2sp",
+                "auditLogsTableName": "Sqltempj2sp",
+                "retentionDays": "0"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
             "sku": {
-                "name": "Basic"
+                "name": "S2",
+                "tier": "Standard"
             },
-            "tags": {}
-        },
-        {
-            "name": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1')]",
-            "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2018-04-01",
+            "kind": "v12.0,user",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod')]",
+            "apiVersion": "2017-03-01-preview",
             "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', 'vm-',parameters('companyAbbreviation'),'-j2sp-1253')]",
-                "[concat('Microsoft.Storage/storageAccounts/', 'rg', toLower(parameters('companyAbbreviation')),'j2spdiag')]"
-            ],
+            "scale": null,
             "properties": {
-                "hardwareProfile": {
-                    "vmSize": "[parameters('virtualMachineSize')]"
-                },
-                "storageProfile": {
-                    "osDisk": {
-                        "createOption": "fromImage",
-                        "managedDisk": {
-                            "storageAccountType": "Premium_LRS"
-                        }
-                    },
-                    "imageReference": {
-                        "publisher": "MicrosoftWindowsServer",
-                        "offer": "WindowsServer",
-                        "sku": "2016-Datacenter",
-                        "version": "latest"
-                    }
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('vm-',parameters('companyAbbreviation'),'-j2sp-1253'))]"
-                        }
-                    ]
-                },
-                "osProfile": {
-                    "computerName": "[concat('vm-',parameters('companyAbbreviation'),'-j2sp-1')]",
-                    "adminUsername": "[parameters('adminUsername')]",
-                    "adminPassword": "[parameters('adminPassword')]",
-                    "windowsConfiguration": {
-                        "enableAutomaticUpdates": true,
-                        "provisionVmAgent": true
-                    }
-                },
-                "diagnosticsProfile": {
-                    "bootDiagnostics": {
-                        "enabled": true,
-                        "storageUri": "[concat('https://', 'rg',toLower(parameters('companyAbbreviation')),'j2spdiag', '.blob.core.windows.net/')]"
-                    }
-                }
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "maxSizeBytes": 268435456000,
+                "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+                "zoneRedundant": false
             },
-            "tags": {}
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]"
+            ]
+        },
+		
+        {
+            "type": "Microsoft.Sql/servers/encryptionProtector",
+            "kind": "servicemanaged",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'current')]",
+            "apiVersion": "2015-05-01-preview",
+            "scale": null,
+            "properties": {
+                "serverKeyName": "ServiceManaged",
+                "serverKeyType": "ServiceManaged"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]"
+            ]
         },
         {
+            "type": "Microsoft.Sql/servers/keys",
+            "kind": "servicemanaged",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'ServiceManaged')]",
+            "apiVersion": "2015-05-01-preview",
+            "scale": null,
+            "properties": {
+                "serverKeyType": "[parameters('keys_ServiceManaged_name')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod', '/', 'CreateIndex')]",
+            "apiVersion": "2014-04-01",
+            "scale": null,
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]",
+                "[resourceId('Microsoft.Sql/servers/databases', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'), concat('db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod', '/', 'DropIndex')]",
+            "apiVersion": "2014-04-01",
+            "scale": null,
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]",
+                "[resourceId('Microsoft.Sql/servers/databases', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'), concat('db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod', '/', 'DbParameterization')]",
+            "apiVersion": "2014-04-01",
+            "scale": null,
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]",
+                "[resourceId('Microsoft.Sql/servers/databases', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'), concat('db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod', '/', 'DefragmentIndex')]",
+            "apiVersion": "2014-04-01",
+            "scale": null,
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]",
+                "[resourceId('Microsoft.Sql/servers/databases', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'), concat('db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod', '/', 'ForceLastGoodPlan')]",
+            "apiVersion": "2014-04-01",
+            "scale": null,
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]",
+                "[resourceId('Microsoft.Sql/servers/databases', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'), concat('db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod', '/', 'Default')]",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "auditingState": "New",
+                "eventTypesToAudit": "PlainSQL_Success,PlainSQL_Failure,ParameterizedSQL_Success,ParameterizedSQL_Failure,StoredProcedure_Success,StoredProcedure_Failure,Login_Success,Login_Failure,TransactionManagement_Success,TransactionManagement_Failure",
+                "storageAccountName": null,
+                "storageAccountKey": null,
+                "storageAccountSecondaryKey": null,
+                "storageTableEndpoint": null,
+                "storageAccountResourceGroupName": null,
+                "storageAccountSubscriptionId": null,
+                "useServerDefault": "Enabled",
+                "fullAuditLogsTableName": "SQLDBAuditLogsSqltempj2spDbtempj2spprod",
+                "auditLogsTableName": "Sqltempj2spDbtempj2spprod",
+                "retentionDays": "0"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]",
+                "[resourceId('Microsoft.Sql/servers/databases', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'), concat('db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod', '/', 'Default')]",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "state": "Enabled"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]",
+                "[resourceId('Microsoft.Sql/servers/databases', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'), concat('db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod', '/', 'current')]",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "status": "Enabled"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]",
+                "[resourceId('Microsoft.Sql/servers/databases', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'), concat('db-',toLower(parameters('companyAbbreviation')),'-j2sp-prod'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'master', '/', 'Default')]",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "auditingState": "New",
+                "eventTypesToAudit": "PlainSQL_Success,PlainSQL_Failure,ParameterizedSQL_Success,ParameterizedSQL_Failure,StoredProcedure_Success,StoredProcedure_Failure,Login_Success,Login_Failure,TransactionManagement_Success,TransactionManagement_Failure",
+                "storageAccountName": null,
+                "storageAccountKey": null,
+                "storageAccountSecondaryKey": null,
+                "storageTableEndpoint": null,
+                "storageAccountResourceGroupName": null,
+                "storageAccountSubscriptionId": null,
+                "useServerDefault": "Enabled",
+                "fullAuditLogsTableName": "SQLDBAuditLogsSqltempj2spMaster",
+                "auditLogsTableName": "Sqltempj2spMaster",
+                "retentionDays": "0"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'master', '/', 'Default')]",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "state": "Enabled"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "name": "[concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp', '/', 'master', '/', 'current')]",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "status": "Disabled"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]"
+            ]
+        }
             "name": "[concat('rg',toLower(parameters('companyAbbreviation')),'j2spdiag')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2018-02-01",
@@ -175,11 +347,5 @@
             },
             "tags": {}
         }
-	],
-    "outputs": {
-        "adminUsername": {
-            "type": "string",
-            "value": "[parameters('adminUsername')]"
-        }
-    }
+	]
 }
