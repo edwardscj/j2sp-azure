@@ -336,16 +336,5 @@
                 "[resourceId('Microsoft.Sql/servers', concat('sql-',toLower(parameters('companyAbbreviation')),'-j2sp'))]"
             ]
         }
-            "name": "[concat('rg',toLower(parameters('companyAbbreviation')),'j2spdiag')]",
-            "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2018-02-01",
-            "location": "[resourceGroup().location]",
-            "properties": {},
-            "kind": "Storage",
-            "sku": {
-                "name": "Standard_LRS"
-            },
-            "tags": {}
-        }
 	]
 }
